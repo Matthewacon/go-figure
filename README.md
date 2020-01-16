@@ -1,14 +1,17 @@
 # go-figure
 An environment configuration bus with both synchronous and asynchronous implementations.
 
-## Getting Started
+## Getting started
+Add `github.com/Matthewacon/go-figure v0.0.2` to the require section in your `go.mod`.
+
+## Setup
 Somewhere in your application, define an environment type that fits your needs and implement `config.IEnvironment`:
 ```go
 package environment
 
 import (
- "github.com/go-figure"
- "github.com/go-figure/config"
+ "github.com/Matthewacon/go-figure"
+ "github.com/Matthewacon/go-figure/config"
 )
 
 //Define your environment type and implement config.IEnvironment
@@ -46,7 +49,7 @@ package main
 
 import (
  "internal/environments"
- "github.com/go-figure"
+ "github.com/Matthewacon/go-figure"
 )
 
 func main() {
@@ -58,21 +61,13 @@ func main() {
 }
 ```
 
-### Adding configuration parameters and listeners
+### Adding and retrieving configuration parameters
 Your configuration requirements may vary depending on the usage within your application. To make the most of your
 configuration options, you may define multiple parameter key and value types.
-
-You may want to listen for configuration changes to make live updates to your environment. There are two main
-events that you can listen to: `PARAMETER_ACCESS_READ` and `PARAMETER_ACCESS_WRITE`. If you want to handle both
-events, you may also use `PARAMETER_ACCESS_ANY`.
 ```go
-package sql
+package "sql"
 
-import (
- "fmt"
-
- "github.com/go-figure/config"
-)
+import "github.com/Matthewacon/go-figure/config"
 
 type SqlConfigKey string
 //config.IParameterKey
@@ -92,6 +87,30 @@ var (
  "some key identifier",
  "that matches the type",
  "of your custom key"
+)
+
+func NewSqlComponent(env config.IEnvironment) {
+ cfg := env.GetConfig()
+ var timeout SqlConfigValue
+ var ok bool
+ if timeout, ok = cfg.GetParameter(CONNECTION_TIMEOUT); !ok {
+  timeout = SqlConfigValue(32)
+  cfg.SetParameter(CONNECTION_TIMEOUT, timeout)
+ }
+}
+```
+
+### Adding configuration parameter listeners
+You may want to listen for configuration changes to make live updates to your environment. There are two main
+events that you can listen to: `PARAMETER_ACCESS_READ` and `PARAMETER_ACCESS_WRITE`. If you want to handle both
+events, you may also use `PARAMETER_ACCESS_ANY`.
+```go
+package sql
+
+import (
+ "fmt"
+
+ "github.com/Matthewacon/go-figure/config"
 )
 
 func NewSqlComponent(env config.IEnvironment) {
