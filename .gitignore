@@ -11,5 +11,14 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# GoLand
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Go
+go.sum
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
