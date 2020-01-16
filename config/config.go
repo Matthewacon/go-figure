@@ -5,6 +5,7 @@ type IEnvironment interface {
 	SetConfig(cfg IConfigBus)
 	GetConfig() IConfigBus
 	String() string
+	IsLive() bool
 }
 
 //Interface type for all config parameter keys
@@ -51,6 +52,7 @@ type IConfigBus interface {
  SetCallbackErrorHandler(handler CallbackErrorHandler) CallbackErrorHandler
 	SetUnexpectedPanicHandler(handler PanicHandler) PanicHandler
 	GetParameter(key IParameterKey) (IParameterValue, bool)
+	//TODO GetParameterOr(key IParameterKey, value IParameterValue) IParameterValue
 	GetParameters() Parameters
 	SetParameter(key IParameterKey, value IParameterValue)
 	SetParameters(params map[IParameterKey]IParameterValue)

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"go-figure"
-	"go-figure/config"
+	"github.com/Matthewacon/go-figure"
+	"github.com/Matthewacon/go-figure/config"
 )
 
 type Environment struct {
@@ -17,6 +17,7 @@ type Environment struct {
 func (e *Environment) SetConfig(cfg config.IConfigBus) { e.IConfigBus = cfg }
 func (e *Environment) GetConfig() config.IConfigBus    { return e.IConfigBus }
 func (e *Environment) String() string                  { return e.string }
+func (e *Environment) IsLive() bool                    { return e.IConfigBus != nil }
 
 func DefaultEnvAndConfig() config.IEnvironment {
 	env := &Environment{ string: "env" }

@@ -2,8 +2,9 @@ package go_figure
 
 import (
 	"fmt"
-	"go-figure/config"
-	"go-figure/internal"
+
+	"github.com/Matthewacon/go-figure/config"
+	"github.com/Matthewacon/go-figure/internal"
 )
 
 func NewSynchronousConfig(env config.IEnvironment) config.IConfigBus {

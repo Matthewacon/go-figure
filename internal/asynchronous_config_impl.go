@@ -1,6 +1,6 @@
 package internal
 
-import "go-figure/config"
+import "github.com/Matthewacon/go-figure/config"
 
 //TODO
 func NewAsynchronousConfigBus() config.IConfigBus {

@@ -1,41 +1,42 @@
 package benchmarks
 
 import (
-	"go-figure/config"
-	common "go-figure/internal/metrics"
 	"testing"
+
+	"github.com/Matthewacon/go-figure/config"
+	"github.com/Matthewacon/go-figure/internal/metrics"
 )
 
 func BenchmarkConfigKVInsertionPrebuilt(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	for i := 0; i < b.N; i++ {
 		cfg.SetParameter(kv, kv)
 	}
 }
 
-var insertionCfg = common.DefaultEnvAndConfig().GetConfig()
+var insertionCfg = metrics.DefaultEnvAndConfig().GetConfig()
 func BenchmarkConfigKVInsertion(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		insertionCfg.SetParameter(kv, kv)
 	}
 }
 
 func BenchmarkConfigKVLookup(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	for i := 0; i < b.N; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		cfg.SetParameter(kv, kv)
 	}
 	for i := 0; i < b.N; i++ {
-		_, _ = cfg.GetParameter(common.IntKeyValue(i))
+		_, _ = cfg.GetParameter(metrics.IntKeyValue(i))
 	}
 }
 
 func BenchmarkConfigKVLookupPrebuilt(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.SetParameter(kv, kv)
 	for i := 0; i < b.N; i++ {
 		_, _ = cfg.GetParameter(kv)
@@ -44,13 +45,13 @@ func BenchmarkConfigKVLookupPrebuilt(b *testing.B) {
 
 func BenchmarkConfigKVRemoval(b *testing.B) {
 	//setup for benchmark
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	for i := 0; i < b.N; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		cfg.SetParameter(kv, kv)
 	}
 	for i := 0; i < b.N; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		_, _ = cfg.RemoveParameter(kv)
 	}
 }
@@ -60,8 +61,8 @@ var zeroParameterListener = func(value config.IParameterValue, access config.Par
 }
 
 func BenchmarkReadAccessCallback(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	key := common.IntKeyValue(0)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	key := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		key,
 		config.PARAMETER_ACCESS_READ,
@@ -74,13 +75,13 @@ func BenchmarkReadAccessCallback(b *testing.B) {
 }
 
 func BenchmarkWriteAccessCallback(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	cfg.AddParameterListener(
-		common.IntKeyValue(0),
+		metrics.IntKeyValue(0),
 		config.PARAMETER_ACCESS_WRITE,
 		zeroParameterListener,
 	)
-	key := common.IntKeyValue(0)
+	key := metrics.IntKeyValue(0)
 	for i := 0; i < b.N; i++ {
 		//Invoke write access callback
 		cfg.SetParameter(key, key)
@@ -88,13 +89,13 @@ func BenchmarkWriteAccessCallback(b *testing.B) {
 }
 
 func BenchmarkAnyAccessCallbackOnRead(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	cfg.AddParameterListener(
-		common.IntKeyValue(0),
+		metrics.IntKeyValue(0),
 		config.PARAMETER_ACCESS_ANY,
 		zeroParameterListener,
 	)
-	key := common.IntKeyValue(0)
+	key := metrics.IntKeyValue(0)
 	for i := 0; i < b.N; i++ {
 		//Invoke read access callback
 		_, _ = cfg.GetParameter(key)
@@ -103,8 +104,8 @@ func BenchmarkAnyAccessCallbackOnRead(b *testing.B) {
 
 
 func BenchmarkAnyAccessCallbackOnWrite(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	key := common.IntKeyValue(0)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	key := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		key,
 		config.PARAMETER_ACCESS_ANY,
@@ -117,9 +118,9 @@ func BenchmarkAnyAccessCallbackOnWrite(b *testing.B) {
 }
 
 func BenchmarkAnyAccessCallbackOnReadVerticallyScaled(b *testing.B) {
- cfg := common.DefaultEnvAndConfig().GetConfig()
+ cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	for i := 0; i < b.N; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		cfg.SetParameter(kv, kv)
 		cfg.AddParameterListener(
 			kv,
@@ -132,13 +133,13 @@ func BenchmarkAnyAccessCallbackOnReadVerticallyScaled(b *testing.B) {
 	}
 	for i := 0; i < b.N; i++ {
 		//Invoke read callbacks
-		_, _ = cfg.GetParameter(common.IntKeyValue(i))
+		_, _ = cfg.GetParameter(metrics.IntKeyValue(i))
 	}
 }
 
 func BenchmarkAnyAccessCallbackOnReadHorizontallyScaled(b *testing.B) {
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.SetParameter(kv, kv)
 	for i := 0; i < b.N; i++ {
 		cfg.AddParameterListener(

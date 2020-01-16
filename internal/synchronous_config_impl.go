@@ -7,7 +7,7 @@ import (
 
 	"github.com/Matthewacon/gas"
 
-	"go-figure/config"
+	"github.com/Matthewacon/go-figure/config"
 )
 
 const concurrentModification = "Configuration bus detected a concurrent modification to the listeners!\n"

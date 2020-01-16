@@ -2,22 +2,22 @@ package tests
 
 import (
 	"fmt"
-	"go-figure/config"
 	"testing"
 
-	common "go-figure/internal/metrics"
+	"github.com/Matthewacon/go-figure/config"
+	"github.com/Matthewacon/go-figure/internal/metrics"
 )
 
 func TestKVInsertionAndRetrieval(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	env := common.DefaultEnvAndConfig()
+	defer metrics.CatchUnexpectedPanic(t)
+	env := metrics.DefaultEnvAndConfig()
 	cfg := env.GetConfig()
 	count := 100000
 	//insert count kv config pairs
 	for i := 0; i < count; i++ {
 		cfg.SetParameter(
-			common.IntKeyValue(i),
-			common.IntKeyValue(-i),
+			metrics.IntKeyValue(i),
+			metrics.IntKeyValue(-i),
 		)
 	}
 	//verify total entry count
@@ -31,7 +31,7 @@ func TestKVInsertionAndRetrieval(t *testing.T) {
 	}
 	//verify config pairs
 	for i := 0; i < count; i++ {
-		value, ok := cfg.GetParameter(common.IntKeyValue(i))
+		value, ok := cfg.GetParameter(metrics.IntKeyValue(i))
 		if !ok {
 			t.Errorf(
 				"Missing kv pair [%d,%d]!\n",
@@ -39,7 +39,7 @@ func TestKVInsertionAndRetrieval(t *testing.T) {
 			)
 			return
 		}
-		if value != common.IntKeyValue(-i) {
+		if value != metrics.IntKeyValue(-i) {
 			t.Errorf(
 				"Failed to verify kv config pair, expected: [%d,%d] received: [%d,%d]\n",
 				i, -i,
@@ -50,7 +50,7 @@ func TestKVInsertionAndRetrieval(t *testing.T) {
 	}
 }
 
-func addAccessCallback(t *testing.T, cfg config.IConfigBus, kv common.IntKeyValue) {
+func addAccessCallback(t *testing.T, cfg config.IConfigBus, kv metrics.IntKeyValue) {
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_WRITE,
@@ -68,16 +68,16 @@ func addAccessCallback(t *testing.T, cfg config.IConfigBus, kv common.IntKeyValu
 }
 
 func TestAddAccessCallback(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	addAccessCallback(t, cfg, kv)
 }
 
 func TestRemoveAccessCallback(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	addAccessCallback(t, cfg, kv)
 	listener := cfg.GetParameterListeners(kv)[0]
 	cfg.RemoveParameterListener(kv, listener.ParameterAccess, *listener.ParameterListener)
@@ -120,34 +120,34 @@ func addCheckedListener(t *testing.T, cfg config.IConfigBus, key config.IParamet
 }
 
 func TestKeyReadAccessCallback(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	count := 100
 	for i := 0; i < count; i++ {
-		key, value := common.IntKeyValue(i), common.IntKeyValue(i)
+		key, value := metrics.IntKeyValue(i), metrics.IntKeyValue(i)
 		cfg.SetParameter(key, value)
 		addCheckedListener(t, cfg, key, value, config.PARAMETER_ACCESS_READ)
 	}
 	for i := 0; i < count; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		//Invoke read access callbacks
-		_, _ = cfg.GetParameter(common.IntKeyValue(i))
+		_, _ = cfg.GetParameter(metrics.IntKeyValue(i))
 		//Should not invoke read access callbacks
 		cfg.SetParameter(kv, kv)
 	}
 }
 
 func TestKeyWriteAccessCallback(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	count := 100
 	for i := 0; i < count; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		cfg.SetParameter(kv, kv)
 		addCheckedListener(t, cfg, kv, kv, config.PARAMETER_ACCESS_WRITE)
 	}
  for i := 0; i < count; i++ {
- 	kv := common.IntKeyValue(i)
+ 	kv := metrics.IntKeyValue(i)
 		//Invoke write access callbacks
  	cfg.SetParameter(kv, kv)
 		//Should not invoke read access callbacks
@@ -156,12 +156,12 @@ func TestKeyWriteAccessCallback(t *testing.T) {
 }
 
 func TestKeyAnyAccessCallback(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
 	count := 100
 	calls := map[config.IParameterKey]int{}
 	for i := 0; i < count; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		cfg.SetParameter(kv, kv)
 		cfg.AddParameterListener(
 			kv,
@@ -181,7 +181,7 @@ func TestKeyAnyAccessCallback(t *testing.T) {
 		)
 	}
 	for i := 0; i < count; i++ {
-		kv := common.IntKeyValue(i)
+		kv := metrics.IntKeyValue(i)
 		//Invoke read access callbacks
 		_, _ = cfg.GetParameter(kv)
 		//Invoke write access callbacks
@@ -199,9 +199,9 @@ func TestKeyAnyAccessCallback(t *testing.T) {
 }
 
 func TestDefaultCallbackErrorHandler(t *testing.T) {
-	defer common.CatchExpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchExpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_ANY,
@@ -213,9 +213,9 @@ func TestDefaultCallbackErrorHandler(t *testing.T) {
 }
 
 func TestCustomCallbackErrorHandler(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_ANY,
@@ -232,9 +232,9 @@ func TestCustomCallbackErrorHandler(t *testing.T) {
 }
 
 func TestDefaultUnexpectedPanicHandler(t *testing.T) {
-	defer common.CatchExpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchExpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_ANY,
@@ -246,9 +246,9 @@ func TestDefaultUnexpectedPanicHandler(t *testing.T) {
 }
 
 func TestCustomUnexpectedPanicHandler(t *testing.T) {
-	defer common.CatchUnexpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchUnexpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_ANY,
@@ -264,9 +264,9 @@ func TestCustomUnexpectedPanicHandler(t *testing.T) {
 
 //TODO
 //func TestEventLoopCheck(t *testing.T) {
-//	defer common.CatchExpectedPanic(t)
-//	cfg := common.DefaultEnvAndConfig().GetConfig()
-//	kv := common.IntKeyValue(0)
+//	defer metrics.CatchExpectedPanic(t)
+//	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+//	kv := metrics.IntKeyValue(0)
 //	for i := 0; i < 2; i++ {
 //		cfg.AddParameterListener(
 //			kv,
@@ -282,9 +282,9 @@ func TestCustomUnexpectedPanicHandler(t *testing.T) {
 //}
 
 func TestConcurrentModificationCheck(t *testing.T) {
-	defer common.CatchExpectedPanic(t)
-	cfg := common.DefaultEnvAndConfig().GetConfig()
-	kv := common.IntKeyValue(0)
+	defer metrics.CatchExpectedPanic(t)
+	cfg := metrics.DefaultEnvAndConfig().GetConfig()
+	kv := metrics.IntKeyValue(0)
 	cfg.AddParameterListener(
 		kv,
 		config.PARAMETER_ACCESS_READ,
