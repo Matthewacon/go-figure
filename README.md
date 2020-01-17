@@ -2,7 +2,7 @@
 An environment configuration bus with both synchronous and asynchronous implementations.
 
 ## Getting started
-Add `github.com/Matthewacon/go-figure v0.0.2` to the require section in your `go.mod`.
+Add `github.com/Matthewacon/go-figure v0.0.3` to the require section in your `go.mod`.
 
 ## Setup
 Somewhere in your application, define an environment type that fits your needs and implement `config.IEnvironment`:
